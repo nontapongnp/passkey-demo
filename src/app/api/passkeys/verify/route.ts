@@ -23,7 +23,7 @@ export async function POST(req: Request) {
       expectedOrigin: origin,
       expectedRPID: rpID,
     });
-    if (!v.verified || !v.registrationInfo) throw new Error("ตรวจสอบ passkey ไม่ผ่าน");
+    if (!v.verified || !v.registrationInfo) throw new Error("ตรวจสอบ Passkey ไม่ผ่าน");
 
     await prisma.credential.create({
       data: { ...toCredentialData(v.registrationInfo), userId: user.id },

@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: (e as Error).message }, { status: 400 });
   }
   if (!verification.verified || !verification.registrationInfo) {
-    return NextResponse.json({ error: "ตรวจสอบ passkey ไม่ผ่าน" }, { status: 400 });
+    return NextResponse.json({ error: "ตรวจสอบ Passkey ไม่ผ่าน" }, { status: 400 });
   }
 
   try {

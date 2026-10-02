@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Passkey Demo",
-  description: "ตัวอย่างการทำ passkey ด้วย Next.js, Prisma และ PostgreSQL",
+  description: "ตัวอย่างการทำ Passkey ด้วย Next.js, Prisma และ PostgreSQL",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

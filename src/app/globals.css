@@ -68,6 +68,8 @@ p { margin: 0 0 12px; }
 }
 
 label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; }
+/* ponytail: ใส่ * ให้ทุก label ที่ตามด้วย input required อัตโนมัติ — screen reader รู้จาก required อยู่แล้ว เลยซ่อน * จาก AT */
+label:has(+ input:required)::after { content: " *"; content: " *" / ""; color: var(--danger); }
 .field { margin-bottom: 18px; }
 .hint { font-weight: 400; color: var(--muted); font-size: 0.82rem; margin-top: 6px; }
 

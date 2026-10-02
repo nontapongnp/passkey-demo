@@ -12,7 +12,7 @@ export function toCredentialData(info: RegistrationInfo) {
     deviceType: credentialDeviceType,
     backedUp: credentialBackedUp,
     transports: credential.transports ?? [],
-    name: credentialDeviceType === "multiDevice" ? "Synced passkey" : "Device-bound passkey",
+    name: credentialDeviceType === "multiDevice" ? "Synced Passkey" : "Device-bound Passkey",
   };
 }
 

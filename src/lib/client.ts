@@ -15,7 +15,7 @@ export function explainWebAuthnError(e: unknown) {
     case "NotAllowedError":
       return "ยกเลิกหรือหมดเวลา ลองกดใหม่อีกครั้ง";
     case "InvalidStateError":
-      return "อุปกรณ์นี้มี passkey ของบัญชีนี้อยู่แล้ว";
+      return "อุปกรณ์นี้มี Passkey ของบัญชีนี้อยู่แล้ว";
     default:
       return err?.message ?? "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ";
   }

@@ -44,7 +44,7 @@ export function ProfileClient({
     setBusy(true);
     try {
       const opt = await postJSON("/api/passkeys/options");
-      if (!opt.ok) return setError(opt.data.error ?? "เพิ่ม passkey ไม่สำเร็จ");
+      if (!opt.ok) return setError(opt.data.error ?? "เพิ่ม Passkey ไม่สำเร็จ");
 
       let attestation;
       try {
@@ -54,7 +54,7 @@ export function ProfileClient({
       }
 
       const ver = await postJSON("/api/passkeys/verify", attestation);
-      if (!ver.ok) return setError(ver.data.error ?? "เพิ่ม passkey ไม่สำเร็จ");
+      if (!ver.ok) return setError(ver.data.error ?? "เพิ่ม Passkey ไม่สำเร็จ");
       router.refresh();
     } finally {
       setBusy(false);
@@ -62,7 +62,7 @@ export function ProfileClient({
   }
 
   async function removePasskey(id: string) {
-    if (!confirm("ลบ passkey นี้? อุปกรณ์นั้นจะเข้าสู่ระบบไม่ได้อีก")) return;
+    if (!confirm("ลบ Passkey นี้? อุปกรณ์นั้นจะเข้าสู่ระบบไม่ได้อีก")) return;
     setError("");
     const res = await fetch(`/api/passkeys/${encodeURIComponent(id)}`, { method: "DELETE" });
     if (!res.ok) {
@@ -96,21 +96,21 @@ export function ProfileClient({
 
       {passkeys.length < 2 && (
         <div className="notice">
-          บัญชีนี้มี passkey เพียง {passkeys.length} อัน ถ้าอุปกรณ์หายจะต้องพึ่ง recovery code
-          แนะนำให้เพิ่ม passkey อีกอย่างน้อย 1 อัน เช่น มือถืออีกเครื่องหรือ security key
+          บัญชีนี้มี Passkey เพียง {passkeys.length} อัน ถ้าอุปกรณ์หายจะต้องพึ่ง Recovery Code
+          แนะนำให้เพิ่ม Passkey อีกอย่างน้อย 1 อัน เช่น มือถืออีกเครื่องหรือ Security Key
         </div>
       )}
 
       <section className="card" aria-labelledby="pk-title">
         <h2 id="pk-title">Passkeys ({passkeys.length})</h2>
-        <p className="small">server เก็บเฉพาะ public key ส่วน private key อยู่ในอุปกรณ์ของคุณ</p>
+        <p className="small">Server เก็บเฉพาะ Public Key ส่วน Private Key อยู่ในอุปกรณ์ของคุณ</p>
 
         {passkeys.map((p) => (
           <div className="row" key={p.id}>
             <div>
               <strong>{p.name}</strong>
               <span className={`badge ${p.backedUp ? "synced" : "bound"}`}>
-                {p.backedUp ? "sync ข้ามเครื่อง" : "ผูกกับอุปกรณ์"}
+                {p.backedUp ? "Sync ข้ามเครื่อง" : "ผูกกับอุปกรณ์"}
               </span>
               <div className="small">
                 เพิ่มเมื่อ {fmt(p.createdAt)}
@@ -131,13 +131,13 @@ export function ProfileClient({
 
         <div style={{ marginTop: 16 }}>
           <button className="btn inline" onClick={addPasskey} disabled={busy}>
-            {busy ? "รอยืนยันบนอุปกรณ์…" : "เพิ่ม passkey"}
+            {busy ? "รอยืนยันบนอุปกรณ์…" : "เพิ่ม Passkey"}
           </button>
         </div>
       </section>
 
       <section className="card" aria-labelledby="rc-title">
-        <h2 id="rc-title">Recovery codes</h2>
+        <h2 id="rc-title">Recovery Codes</h2>
         <p className="small">เหลือโค้ดที่ยังไม่ได้ใช้ {recoveryLeft} จาก 8</p>
 
         {newCodes ? (

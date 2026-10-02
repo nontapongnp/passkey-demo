@@ -10,7 +10,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const count = await prisma.credential.count({ where: { userId: user.id } });
   if (count <= 1) {
     return NextResponse.json(
-      { error: "ลบ passkey อันสุดท้ายไม่ได้ ไม่งั้นจะเข้าบัญชีไม่ได้" },
+      { error: "ลบ Passkey อันสุดท้ายไม่ได้ ไม่งั้นจะเข้าบัญชีไม่ได้" },
       { status: 400 },
     );
   }

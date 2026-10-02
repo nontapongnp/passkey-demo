@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   const code = String(body.code ?? "");
 
   const fail = () =>
-    NextResponse.json({ error: "อีเมลหรือ recovery code ไม่ถูกต้อง" }, { status: 401 });
+    NextResponse.json({ error: "อีเมลหรือ Recovery Code ไม่ถูกต้อง" }, { status: 401 });
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) return fail();

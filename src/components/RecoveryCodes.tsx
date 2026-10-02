@@ -13,7 +13,7 @@ export function RecoveryCodes({ codes }: { codes: string[] }) {
 
   return (
     <div>
-      <div className="codes" aria-label="Recovery codes">
+      <div className="codes" aria-label="Recovery Codes">
         {codes.map((c) => (
           <span key={c}>{c}</span>
         ))}
