@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ไม่มี passwordHash — ไม่มีความลับอะไรเก็บอยู่ใน DB เลย
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  displayName   String
+  createdAt     DateTime       @default(now())
+  credentials   Credential[]
+  sessions      Session[]
+  recoveryCodes RecoveryCode[]
+}
+
+// 1 user มีได้หลาย passkey (แนะนำอย่างน้อย 2)
+model Credential {
+  id         String    @id // credential ID (base64url) ที่ authenticator ออกให้
+  userId     String
+  publicKey  Bytes // public key (COSE) — เปิดเผยได้ ขโมยไปก็ไม่มีประโยชน์
+  counter    Int       @default(0)
+  deviceType String // "singleDevice" = device-bound, "multiDevice" = synced
+  backedUp   Boolean // true = sync ขึ้น cloud แล้ว
+  transports String[] // usb / nfc / ble / internal / hybrid
+  name       String
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// เก็บเฉพาะ hash ของ session token
+model Session {
+  id        String   @id // sha256(token)
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// challenge ใช้ครั้งเดียว อายุ 5 นาที
+// ตอน register ยังไม่มี User จึงพก email/displayName มากับ challenge
+model Challenge {
+  id          String   @id @default(uuid())
+  challenge   String
+  type        String // register | login | add-passkey
+  userId      String?
+  email       String?
+  displayName String?
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+}
+
+// ทางกู้บัญชี (เหมือน GitHub recovery codes) เก็บเฉพาะ hash
+model RecoveryCode {
+  id       String    @id @default(uuid())
+  userId   String
+  codeHash String
+  usedAt   DateTime?
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
