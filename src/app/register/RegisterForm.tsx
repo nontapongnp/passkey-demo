@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { startRegistration, browserSupportsWebAuthn } from '@simplewebauthn/browser'
 import { explainWebAuthnError, postJSON } from '@/lib/client'
 import { RecoveryCodes } from '@/components/RecoveryCodes'
+import { LoadingOverlay } from '@/components/LoadingOverlay'
 
 type Step = 'form' | 'codes'
 
@@ -17,6 +18,7 @@ export function RegisterForm() {
   const [error, setError] = useState('')
   const [codes, setCodes] = useState<string[]>([])
   const [saved, setSaved] = useState(false)
+  const [redirecting, setRedirecting] = useState(false)
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -58,6 +60,7 @@ export function RegisterForm() {
 
   return (
     <>
+      {redirecting && <LoadingOverlay text="กำลังไปที่โปรไฟล์…" />}
       <ol className="steps" aria-label="ขั้นตอนการสมัคร">
         <li className={cls(1)}>
           <strong>ข้อมูลบัญชี</strong>อีเมลและชื่อ
@@ -125,7 +128,10 @@ export function RegisterForm() {
             <input type="checkbox" checked={saved} onChange={(e) => setSaved(e.target.checked)} />
             ฉันเก็บ Recovery Codes ไว้แล้ว
           </label>
-          <button className="btn" disabled={!saved} onClick={() => router.push('/profile')}>
+          <button className="btn" disabled={!saved} onClick={() => {
+              setRedirecting(true)
+              router.push('/profile')
+            }}>
             ไปที่โปรไฟล์
           </button>
         </div>

@@ -18,8 +18,9 @@ export async function POST(req: Request) {
   const ch = await consumeChallenge("login");
   if (!ch) return fail();
 
+  // Passkey ต้องเป็นของบัญชีเดียวกับอีเมลที่กรอก (เบราว์เซอร์กรองให้แล้ว แต่ server ต้องเช็กเองด้วย)
   const cred = await prisma.credential.findUnique({ where: { id: response.id } });
-  if (!cred) return fail();
+  if (!cred || cred.userId !== ch.userId) return fail();
 
   try {
     const { verified, authenticationInfo } = await verifyAuthenticationResponse({

@@ -9,7 +9,7 @@ export default async function LoginPage() {
   if (await getSessionUser()) redirect("/profile");
   return (
     <main>
-      <Hero title="เข้าสู่ระบบ" sub="ไม่ต้องกรอกอีเมลหรือรหัสผ่าน เลือก Passkey ที่บันทึกไว้ได้เลย" />
+      <Hero title="เข้าสู่ระบบ" sub="กรอกอีเมล แล้วยืนยันตัวตนด้วย Passkey ของบัญชีนั้น ไม่ต้องใช้รหัสผ่าน" />
       <LoginForm />
     </main>
   );

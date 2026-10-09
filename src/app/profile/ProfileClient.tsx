@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { startRegistration } from "@simplewebauthn/browser";
 import { explainWebAuthnError, postJSON } from "@/lib/client";
 import { RecoveryCodes } from "@/components/RecoveryCodes";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 
 type Passkey = {
   id: string;
@@ -32,8 +33,10 @@ export function ProfileClient({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [newCodes, setNewCodes] = useState<string[] | null>(null);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   async function logout() {
+    setLoggingOut(true);
     await postJSON("/api/logout");
     router.push("/login");
     router.refresh();
@@ -83,6 +86,7 @@ export function ProfileClient({
 
   return (
     <>
+      {loggingOut && <LoadingOverlay text="กำลังออกจากระบบ…" />}
       <div className="profile-head">
         <div className="avatar" aria-hidden="true">{user.displayName.trim().charAt(0).toUpperCase()}</div>
         <div style={{ flex: 1 }}>

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { startAuthentication, browserSupportsWebAuthn } from '@simplewebauthn/browser'
 import { explainWebAuthnError, postJSON } from '@/lib/client'
+import { LoadingOverlay } from '@/components/LoadingOverlay'
 
 export function LoginForm() {
   const router = useRouter()
@@ -11,8 +12,10 @@ export function LoginForm() {
   const [error, setError] = useState('')
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
+  const [redirecting, setRedirecting] = useState(false)
 
-  async function loginWithPasskey() {
+  async function loginWithPasskey(e: React.FormEvent) {
+    e.preventDefault()
     setError('')
     if (!browserSupportsWebAuthn()) {
       setError('เบราว์เซอร์นี้ไม่รองรับ Passkey')
@@ -20,8 +23,8 @@ export function LoginForm() {
     }
     setBusy(true)
     try {
-      // 1) ขอ challenge จาก server
-      const opt = await postJSON('/api/login/options')
+      // 1) ส่งอีเมล → server ออก challenge + รายการ Passkey ของบัญชีนี้
+      const opt = await postJSON('/api/login/options', { email })
       if (!opt.ok) return setError(opt.data.error ?? 'เริ่มเข้าสู่ระบบไม่สำเร็จ')
 
       // 2) ปลดล็อกอุปกรณ์ → เซ็น challenge ด้วย private key (key ไม่ออกจากเครื่อง)
@@ -36,6 +39,7 @@ export function LoginForm() {
       const ver = await postJSON('/api/login/verify', assertion)
       if (!ver.ok) return setError(ver.data.error ?? 'เข้าสู่ระบบไม่สำเร็จ')
 
+      setRedirecting(true)
       router.push('/profile')
       router.refresh()
     } finally {
@@ -46,10 +50,12 @@ export function LoginForm() {
   async function loginWithRecovery(e: React.FormEvent) {
     e.preventDefault()
     setError('')
+    if (!email) return setError('กรอกอีเมลด้านบนก่อน')
     setBusy(true)
     try {
       const res = await postJSON('/api/login/recovery', { email, code })
       if (!res.ok) return setError(res.data.error ?? 'เข้าสู่ระบบไม่สำเร็จ')
+      setRedirecting(true)
       router.push('/profile')
       router.refresh()
     } finally {
@@ -59,23 +65,33 @@ export function LoginForm() {
 
   return (
     <>
+      {redirecting && <LoadingOverlay text="กำลังเข้าสู่ระบบ…" />}
       <div className="card">
         {error && (
           <div className="error" role="alert">
             {error}
           </div>
         )}
-        <button className="btn" onClick={loginWithPasskey} disabled={busy}>
-          {busy ? 'รอยืนยันบนอุปกรณ์…' : 'เข้าสู่ระบบด้วย Passkey'}
-        </button>
+        <form onSubmit={loginWithPasskey}>
+          <div className="field">
+            <label htmlFor="email">อีเมล</label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="username webauthn"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <button className="btn" disabled={busy}>
+            {busy ? 'รอยืนยันบนอุปกรณ์…' : 'เข้าสู่ระบบ'}
+          </button>
+        </form>
 
         <details>
           <summary>ไม่มีอุปกรณ์ที่มี Passkey ? ใช้ Recovery Code</summary>
           <form onSubmit={loginWithRecovery}>
-            <div className="field">
-              <label htmlFor="r-email">อีเมล</label>
-              <input id="r-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-            </div>
             <div className="field">
               <label htmlFor="r-code">Recovery Code</label>
               <input
